@@ -9546,30 +9546,61 @@ var TodoList = function (_Component) {
     _this.state = {
       todos: [{
         task: "Buy Milk",
-        isComplete: true
+        isComplete: false,
+        isEditing: false
       }, {
         task: "Feed Dog",
-        isComplete: true
+        isComplete: false,
+        isEditing: false
       }, {
         task: "Clean Garage",
-        isComplete: true
-      }],
-      errorMessage: ""
-
+        isComplete: false,
+        isEditing: false
+      }]
     };
     return _this;
   }
 
-  TodoList.prototype.updateTodos = function updateTodos(event) {
+  TodoList.prototype.deleteTask = function deleteTask(taskToDelete) {
+    __WEBPACK_IMPORTED_MODULE_2_lodash___default.a.remove(this.state.todos, function (todo) {
+      return todo.task == taskToDelete;
+    });
+    this.setState({ todos: this.state.todos });
+  };
+
+  TodoList.prototype.saveNewTask = function saveNewTask(oldTask, newTask) {
+    var foundTodo = __WEBPACK_IMPORTED_MODULE_2_lodash___default.a.find(this.state.todos, function (todo) {
+      return todo.task === oldTask;
+    });
+    foundTodo.task = newTask;
+    foundTodo.isEditing = false; // reset isEditing, no longer in editing mode
+    this.setState({ todos: this.state.todos });
+  };
+
+  TodoList.prototype.handleIsEditingChange = function handleIsEditingChange(val) {
+    console.log("inside todolist");
+    var foundTodo = __WEBPACK_IMPORTED_MODULE_2_lodash___default.a.find(this.state.todos, function (todo) {
+      return todo.task === val.task;
+    });
+    foundTodo.isEditing = !foundTodo.isEditing;
+    this.setState({
+      todos: this.state.todos
+    });
+  };
+
+  TodoList.prototype.createTodo = function createTodo(event) {
     event.preventDefault();
     var userInput = this.refs.createInput.value;
-    // console.log("Input is: ", userInput)
+
     var validation = this.validateInput(userInput);
     if (validation) {
-      this.state.todos.push({ task: userInput, isComplete: true });
+      this.state.todos.push({
+        task: userInput,
+        isComplete: true,
+        isEditing: false
+      });
       this.setState({ todos: this.state.todos });
     }
-
     return null;
   };
 
@@ -9586,6 +9617,18 @@ var TodoList = function (_Component) {
     return "valid";
   };
 
+  TodoList.prototype.listTodos = function listTodos() {
+    var _this2 = this;
+
+    return this.state.todos.map(function (todo, i) {
+      return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1__TodoListItem__["a" /* default */], _extends({ key: i }, todo, {
+        handleIsEditingChange: _this2.handleIsEditingChange.bind(_this2),
+        saveNewTask: _this2.saveNewTask.bind(_this2),
+        deleteTask: _this2.deleteTask.bind(_this2)
+      }));
+    });
+  };
+
   TodoList.prototype.render = function render() {
     return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
       'div',
@@ -9597,7 +9640,7 @@ var TodoList = function (_Component) {
       ),
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'form',
-        { onSubmit: this.updateTodos.bind(this) },
+        { onSubmit: this.createTodo.bind(this) },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('input', { type: 'text', placeholder: 'Enter a task', ref: 'createInput' }),
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'button',
@@ -9605,9 +9648,29 @@ var TodoList = function (_Component) {
           'Create'
         )
       ),
-      this.state.todos.map(function (todo, i) {
-        return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1__TodoListItem__["a" /* default */], _extends({ key: i }, todo));
-      })
+      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        'table',
+        null,
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          'tbody',
+          null,
+          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+            'tr',
+            null,
+            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+              'th',
+              null,
+              'Task'
+            ),
+            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+              'th',
+              null,
+              'Action'
+            )
+          ),
+          this.listTodos()
+        )
+      )
     );
   };
 
@@ -9693,17 +9756,90 @@ var TodoListItem = function (_Component) {
     return _possibleConstructorReturn(this, _Component.call(this));
   }
 
-  TodoListItem.prototype.render = function render() {
-    console.log("The props", this.props);
+  TodoListItem.prototype.deleteButtonClick = function deleteButtonClick() {
+    this.props.deleteTask(this.props.task);
+  };
+
+  TodoListItem.prototype.onSaveClick = function onSaveClick(event) {
+    event.preventDefault();
+    var userInput = this.refs.input.value;
+    this.props.saveNewTask(this.props.task, userInput);
+  };
+
+  TodoListItem.prototype.isEditingToggle = function isEditingToggle() {
+    this.props.handleIsEditingChange(this.props); // (this??)
+  };
+
+  TodoListItem.prototype.showButtons = function showButtons() {
+    if (this.props.isEditing) {
+      return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        'div',
+        null,
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          'button',
+          { onClick: this.onSaveClick.bind(this) },
+          'Save'
+        ),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          'button',
+          { onClick: this.isEditingToggle.bind(this) },
+          'Cancel'
+        )
+      );
+    } else return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+      'div',
+      null,
+      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        'button',
+        { onClick: this.isEditingToggle.bind(this) },
+        'Edit'
+      ),
+      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        'button',
+        { onClick: this.deleteButtonClick.bind(this) },
+        'Delete'
+      )
+    );
+  };
+
+  TodoListItem.prototype.showTasks = function showTasks() {
+    if (this.props.isEditing) {
+      return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        'form',
+        { onSubmit: this.onSaveClick.bind(this) },
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('input', { type: 'text', defaultValue: this.props.task, ref: 'input' })
+      );
+    }
     return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-      "div",
+      'div',
       null,
       this.props.task
     );
   };
 
+  TodoListItem.prototype.render = function render() {
+    console.log("The props", this.props);
+    return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+      'tr',
+      null,
+      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        'td',
+        null,
+        this.showTasks()
+      ),
+      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        'td',
+        null,
+        this.showButtons()
+      )
+    );
+  };
+
   return TodoListItem;
 }(__WEBPACK_IMPORTED_MODULE_0_react__["Component"]);
+
+// export default TodoListItem
+
 
 /* harmony default export */ __webpack_exports__["a"] = (TodoListItem);
 
