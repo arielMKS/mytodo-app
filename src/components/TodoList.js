@@ -23,7 +23,8 @@ export default class TodoList extends Component {
             isComplete: false,
             isEditing: false
           }
-        ]
+        ],
+        errorMessage: ""
       }
   }
 
@@ -40,7 +41,6 @@ export default class TodoList extends Component {
   }
 
   handleIsEditingChange (val) {
-    console.log("inside todolist")
     const foundTodo = _.find(this.state.todos, todo => todo.task === val.task)
     foundTodo.isEditing = !foundTodo.isEditing;
     this.setState({
@@ -59,7 +59,10 @@ export default class TodoList extends Component {
         isComplete: true,
         isEditing: false
       })
-      this.setState({todos: this.state.todos})
+      this.setState({
+        todos: this.state.todos,
+        errorMessage: ""
+      })
     }
     return null;
   }
@@ -94,15 +97,16 @@ export default class TodoList extends Component {
           <input type="text" placeholder="Enter a task" ref="createInput"  />
           <button type="submit">Create</button>
         </form>
-<table>
-  <tbody>
-    <tr>
-      <th>Task</th>
-      <th>Action</th>
-    </tr>
-        {this.listTodos()}
- </tbody>
-</table>
+        <div className="errorMessage">{this.state.errorMessage}</div>
+        <table>
+          <tbody>
+            <tr>
+              <th>Task</th>
+              <th>Action</th>
+            </tr>
+            {this.listTodos()}
+           </tbody>
+        </table>
      </div>
     )
   }

@@ -3,7 +3,6 @@ import React, {Component} from 'react'
 export default class TodoListItem extends Component {
   constructor (props) {
     super ();
-
   }
 
   deleteButtonClick () {
@@ -17,7 +16,7 @@ export default class TodoListItem extends Component {
   }
 
   isEditingToggle () {
-    this.props.handleIsEditingChange(this.props); // (this??)
+    this.props.handleIsEditingChange(this.props);
   }
 
   showButtons () {

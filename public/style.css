@@ -1,0 +1,45 @@
+body {
+  /*background-color: rgba(220, 220, 220, .7);*/
+  background: peru;
+  margin: 0;
+  background-image: url(/public/img/1.jpg);
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #333;
+}
+
+.errorMessage {
+  color: red;
+}
+
+.container {
+  min-height: 100vh;
+  max-width: 730px;
+  width: 100%;
+  position: relative;
+  margin: 0 auto;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.todo-app {
+  background: rgba(246, 195, 44, 0.5);
+   box-shadow: 1px 2px 4px rgba(0, 0, 0, .5);
+  background: opaque;
+  width: 100%;
+  border-radius: 4px 4px;
+}
+
+h1 {
+  letter-spacing: 5px;
+}
+
+.task-list {
+  /*background-color: purple;*/
+  text-align: left;
+}
